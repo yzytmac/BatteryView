@@ -38,6 +38,7 @@ public class BatteryView extends View {
     private RectF mBatteryRectF;//电池
     private RectF mCapRectF;//电池盖
     private RectF mPowerRectF;//电量
+    private float warningValue =0.2f;//警戒值
 
     /**
      * 设置电量
@@ -53,6 +54,15 @@ public class BatteryView extends View {
             mPower = 1f;
         }
         invalidate();
+    }
+
+    /**
+     * 设置电量低于百分之多少时颜色变化
+     * @param pWarningValue
+     */
+    public void setWarningValue(float pWarningValue){
+        this.warningValue = pWarningValue;
+        postInvalidate();
     }
 
     /**
@@ -120,19 +130,19 @@ public class BatteryView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.AT_MOST) {
-            mBatteryWidth = 50;
+            mBatteryWidth = 60f;
         } else {
             mBatteryWidth = MeasureSpec.getSize(widthMeasureSpec) - raidus * 2 - mCapWidth;
         }
 
         if(MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.AT_MOST) {
-            mBatteryHeight = 25;
+            mBatteryHeight = 30f;
         } else {
             mBatteryHeight = MeasureSpec.getSize(heightMeasureSpec) - raidus * 2;
         }
         initSize();
         initView(getContext());
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        setMeasuredDimension((int)(mBatteryWidth+mCapWidth*2),(int)(mBatteryHeight));
     }
 
     private void initSize() {
@@ -146,12 +156,12 @@ public class BatteryView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (mPower > 0.21f) {
+        if (mPower > warningValue) {
             //电量大于20%显示绿色
             mBatteryPait.setColor(0xff29b473);
             mPowerPaint.setColor(0xff29b473);
             mTextPait.setColor(0xff303030);
-        } else if (mPower < 0.21f) {
+        } else if (mPower < warningValue) {
             //电量少于20%显示红色
             mBatteryPait.setColor(0xfff90f0f);
             mPowerPaint.setColor(0xfff90f0f);
@@ -188,3 +198,4 @@ public class BatteryView extends View {
                 spVal, context.getResources().getDisplayMetrics());
     }
 }
+
